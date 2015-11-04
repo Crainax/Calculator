@@ -1,20 +1,22 @@
 package com.ruffneck.calculator;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.ruffneck.calculator.view.NoScrollGridView;
 
+import java.util.Stack;
+
 public class MainActivity extends AppCompatActivity {
 
+    private SharedPreferences mPref;
     private NoScrollGridView gridView;
-
-    KeyAdapter adapter;
-
     private int height = -2;
 
     private String[] keys = new String[]{"C", "Del", "(", ")",
@@ -22,33 +24,36 @@ public class MainActivity extends AppCompatActivity {
             "4", "5", "6", "×",
             "1", "2", "3", "-",
             ".", "0", "=", "+"};
+    private TextView tv_result;
+
+    /**
+     * 用于维护输入框的栈.
+     */
+    private Stack<String> expression;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         gridView = (NoScrollGridView) findViewById(R.id.gv);
+        tv_result = (TextView) findViewById(R.id.tv_result);
 
-//        System.out.println("layoutParams = " + layoutParams);
-//        Toast.makeText(MainActivity.this, layoutParams.width+","+layoutParams.height, Toast.LENGTH_SHORT).show();
+        asyncInit();
+        dataInit();
 
-//得到设备的大小
-
-
-        initGridView();
-        //添加适配器.
-
-//        setListViewHeightBasedOnChildren(gridView);
-
-
-//        adapter.notifyDataSetChanged();
     }
 
+    /**
+     * 数据初始化
+     */
+    private void dataInit() {
+        expression = new Stack<>();
+    }
 
     /**
-     * 设置好GridView的适配.异步去循环获取.
+     * 异步去循环获取gridView的宽高.
      */
-    private void initGridView() {
+    private void asyncInit() {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -58,8 +63,7 @@ public class MainActivity extends AppCompatActivity {
                         gridView.post(new Runnable() {
                             @Override
                             public void run() {
-                                adapter = new KeyAdapter();
-                                gridView.setAdapter(adapter);
+                                initGridView();
                             }
                         });
                         break;
@@ -73,6 +77,45 @@ public class MainActivity extends AppCompatActivity {
             }
         }).start();
     }
+
+    /**
+     * 初始化GridView的适配.
+     */
+    private void initGridView() {
+        KeyAdapter adapter = new KeyAdapter();
+        gridView.setAdapter(adapter);
+
+        //适配按键事件.
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                String preString = tv_result.getText().toString();
+
+
+
+                switch (keys[position]) {
+                    case "=":
+                        break;
+                    case "Del":
+                        if (!expression.isEmpty()) {
+                            String del = expression.pop();
+                            preString = preString.substring(0, preString.length() - del.length());
+                        }
+                        break;
+                    default:
+                        preString = preString + keys[position];
+                        expression.push(keys[position]);
+                        break;
+                }
+
+                tv_result.setText(preString);
+
+
+            }
+        });
+    }
+
 
     /*public static void setListViewHeightBasedOnChildren(GridView listView) {
         // 获取listview的adapter
@@ -94,7 +137,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // 获取listview的布局参数
-        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        ViewGroup.LayoutPara
+        ms params = listView.getLayoutParams();
         // 设置高度
         params.height = totalHeight;
         // 设置margin

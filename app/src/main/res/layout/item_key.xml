@@ -4,8 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@drawable/selector_item_key"
-    android:clickable="true"
-    android:focusable="true"
     >
 
     <TextView

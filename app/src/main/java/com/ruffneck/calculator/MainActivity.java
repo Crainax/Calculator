@@ -1,13 +1,9 @@
 package com.ruffneck.calculator;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ListAdapter;
@@ -52,15 +48,14 @@ public class MainActivity extends AppCompatActivity {
 
 
     /**
-     * 设置好
+     * 设置好GridView的适配.异步去循环获取.
      */
     private void initGridView() {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                for (int i = 0; i < 20; i++) {
+                for (;;) {
                     height = gridView.getHeight();
-//                    System.out.println("height = " + height);
                     if(height>0){
                         gridView.post(new Runnable() {
                             @Override
@@ -71,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
                         });
                         break;
                     }
-                    Log.e("Main", height + "");
                     try {
                         Thread.sleep(50);
                     } catch (InterruptedException e) {
@@ -115,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
 
     class KeyAdapter extends BaseAdapter {
 
+/*
         int deviceWidth;
         int deviceHeight;
 
@@ -124,6 +119,13 @@ public class MainActivity extends AppCompatActivity {
 
             deviceWidth = display.getWidth();
             deviceHeight = display.getHeight();
+        }
+*/
+        int raw;
+
+        public KeyAdapter(){
+            int count = gridView.getNumColumns();
+            raw = keys.length/count;
         }
 
         @Override
@@ -149,10 +151,10 @@ public class MainActivity extends AppCompatActivity {
 //            int height = deviceHeight * 5 / 7 / 5;//此处的高度需要动态计算
 //            int width = deviceWidth / 4 - 4; //此处的宽度需要动态计算
             ViewGroup.LayoutParams paras = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT
-                    , height/5 - 1);
+                    , height/raw - 1);
             view.setLayoutParams(paras); //使设置好的布局参数应用到控件
 
-            Log.e("Main", paras.height + "");
+//            Log.e("Main", paras.height + "");
 
             TextView tv_key = (TextView) view.findViewById(R.id.tv_key);
             tv_key.setText(keys[position]);

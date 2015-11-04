@@ -5,8 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.GridView;
-import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.ruffneck.calculator.view.NoScrollGridView;
@@ -54,9 +52,9 @@ public class MainActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                for (;;) {
+                for (; ; ) {
                     height = gridView.getHeight();
-                    if(height>0){
+                    if (height > 0) {
                         gridView.post(new Runnable() {
                             @Override
                             public void run() {
@@ -76,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         }).start();
     }
 
-    public static void setListViewHeightBasedOnChildren(GridView listView) {
+    /*public static void setListViewHeightBasedOnChildren(GridView listView) {
         // 获取listview的adapter
         ListAdapter listAdapter = listView.getAdapter();
         if (listAdapter == null) {
@@ -104,28 +102,31 @@ public class MainActivity extends AppCompatActivity {
         // 设置参数
         listView.setLayoutParams(params);
 
-    }
+    }*/
 
 
     class KeyAdapter extends BaseAdapter {
 
-/*
-        int deviceWidth;
-        int deviceHeight;
+        /*
+                int deviceWidth;
+                int deviceHeight;
 
-        public KeyAdapter() {
-            WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-            Display display = windowManager.getDefaultDisplay();
+                public KeyAdapter() {
+                    WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+                    Display display = windowManager.getDefaultDisplay();
 
-            deviceWidth = display.getWidth();
-            deviceHeight = display.getHeight();
-        }
-*/
+                    deviceWidth = display.getWidth();
+                    deviceHeight = display.getHeight();
+                }
+        */
         int raw;
 
-        public KeyAdapter(){
+        public KeyAdapter() {
             int count = gridView.getNumColumns();
-            raw = keys.length/count;
+            if (keys.length % count == 0)
+                raw = keys.length / count;
+            else
+                raw = keys.length / count + 1;
         }
 
         @Override
@@ -151,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
 //            int height = deviceHeight * 5 / 7 / 5;//此处的高度需要动态计算
 //            int width = deviceWidth / 4 - 4; //此处的宽度需要动态计算
             ViewGroup.LayoutParams paras = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT
-                    , height/raw - 1);
+                    , height / raw - 1);
             view.setLayoutParams(paras); //使设置好的布局参数应用到控件
 
 //            Log.e("Main", paras.height + "");

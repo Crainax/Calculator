@@ -10,6 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.ruffneck.calculator.exception.IllegalExpressionException;
 import com.ruffneck.calculator.rpn.RPN;
 import com.ruffneck.calculator.view.NoScrollGridView;
 
@@ -106,18 +107,38 @@ public class MainActivity extends AppCompatActivity {
                         calculate();
                         return;
                     case "Del":
+                        //自动补全点号前的0
                         if (!expression.isEmpty()) {
                             String del = expression.pop();
                             sb.delete(sb.length() - del.length(), sb.length());
                         }
                         break;
-                    default:
-                        if (mPref.getBoolean("isNew", true)) {
-                            clear();
-                            mPref.edit().putBoolean("isNew", false).apply();
+                    case ".":
+                        if (sb.length() == 0) {
+                            add("0");
+                        } else {
+                            String before = sb.substring(sb.length() - 1, sb.length());
+                            if (before != null && !RPN.isNum(before.charAt(0)))
+                                add("0");
                         }
-                        sb.append(keys[position]);
-                        expression.push(keys[position]);
+
+                        defaultKey(position);
+                        break;
+                    case "(":
+                        //自动补全括号前的乘号
+                        if (sb.length() > 0) {
+                            String before = sb.substring(sb.length() - 1, sb.length());
+                            if (before != null && before.charAt(0) == '.') {
+                                add("0");
+                                add("×");
+                            } else if (before != null && RPN.isNum(before.charAt(0)))
+                                add("×");
+                        }
+
+                        defaultKey(position);
+                        break;
+                    default:
+                        defaultKey(position);
                         break;
                 }
                 if (sb.length() > 0) {
@@ -131,12 +152,41 @@ public class MainActivity extends AppCompatActivity {
 
 
     /**
+     * 默认键的处理方法.
+     *
+     * @param position
+     */
+    private void defaultKey(int position) {
+        if (mPref.getBoolean("isNew", true)) {
+            clear();
+            mPref.edit().putBoolean("isNew", false).apply();
+        }
+        add(keys[position]);
+    }
+
+    /**
+     * 往表达式中添加字符串
+     *
+     * @param content 需要添加的字符串
+     */
+    private void add(String content) {
+        sb.append(content);
+        expression.push(content);
+    }
+
+    /**
      * =号里面的逻辑.
      */
     private void calculate() {
         String result = "0";
         try {
+
             String expre = sb.toString().replaceAll("÷", "/").replaceAll("×", "*");
+            if (!RPN.isExpression(expre)) {
+//            System.out.println("ERROR!!");
+                throw new IllegalExpressionException();
+            }
+
             double d_result = RPN.calculate(expre);
             //判断是否为无穷.
             if (d_result == Double.POSITIVE_INFINITY) {
@@ -156,10 +206,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    private String beforeCalculate(String expression) {
+
+        return null;
+    }
+
     /**
      * C键逻辑
      */
-
     private void clear() {
         expression.clear();
         sb.setLength(0);

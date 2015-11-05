@@ -1,8 +1,6 @@
 package com.ruffneck.calculator.rpn;
 
 
-import com.ruffneck.calculator.exception.IllegalExpressionException;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -21,27 +19,31 @@ public class RPN {
      * @param str
      * @return
      */
-    private static boolean isExpression(String str) {
+    public static boolean isExpression(String str) {
         int flag = 0;
         for (int i = 0; i < str.length() - 1; i++) {
             char ch = str.charAt(i);
             char chb = str.charAt(i + 1);
+            //首尾不是数字
             if (((!isNum(ch) && i == 0) && ch != '(')
                     || (!isNum(chb) && (i == str.length() - 2) && chb != ')')) {
-                System.out.println("首尾不是数字---->" + ch + chb);
+//                System.out.println("首尾不是数字---->" + ch + chb);
                 return false;
             }
+            //小数点前后不是数字
             if ((ch == '.' && !isNum(chb)) || (!isNum(ch) && chb == '.')) {
-                System.out.println("小数点前后不是数字--->" + ch + chb);
+//                System.out.println("小数点前后不是数字--->" + ch + chb);
                 return false;
             }
+            //运算符后不是数字
             if (isOperator(ch) && !isNum(chb) && chb != '(') {
-                System.out.println("运算符后不是数字--->" + ch + chb);
+//                System.out.println("运算符后不是数字--->" + ch + chb);
                 return false;
             }
+            //数字后不是运算符
             if (isNum(ch) && !isOperator(chb) && chb != '.' && chb != ')'
                     && !isNum(chb)) {
-                System.out.println("数字后不是运算符--->" + ch + chb);
+//                System.out.println("数字后不是运算符--->" + ch + chb);
                 return false;
             }
             if (ch == '(') {
@@ -51,12 +53,14 @@ public class RPN {
                 flag--;
             }
         }
+        //括号不匹配
         if (flag != 0) {
-            System.out.println("括号不匹配--->");
+//            System.out.println("括号不匹配--->");
             return false;
         }
         return true;
     }
+
 
     /**
      * 字符是否为数字
@@ -64,7 +68,7 @@ public class RPN {
      * @param ch
      * @return
      */
-    private static boolean isNum(char ch) {
+    public static boolean isNum(char ch) {
         if (ch <= '9' && ch >= '0') {
             return true;
         } else {
@@ -275,10 +279,7 @@ public class RPN {
      * @return
      */
     public static double calculate(String expression){
-        if (!isExpression(expression)) {
-//            System.out.println("ERROR!!");
-            throw new IllegalExpressionException();
-        }
+
         List<String> list = resolveString(expression);
 //        System.out.println(list);
         list = nifix_to_post(list);

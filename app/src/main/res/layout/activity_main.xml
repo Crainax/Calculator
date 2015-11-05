@@ -9,27 +9,19 @@
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary" />
 
-    <HorizontalScrollView
-        style="@style/ExpressionScrollViewStyle"
-        android:layout_weight="1">
 
-        <TextView
-            android:id="@+id/tv_expression"
-            style="@style/ExpressionStyle"
-            android:gravity="start|center_vertical"
-            android:textColor="#aaa" />
-    </HorizontalScrollView>
+    <EditText
+        android:id="@+id/tv_expression"
+        style="@style/ExpressionStyle"
+        android:gravity="start|center_vertical"
+        android:textColor="#aaa" />
 
-    <HorizontalScrollView
-        style="@style/ExpressionScrollViewStyle"
-        android:layout_weight="1">
-
-        <TextView
-            android:id="@+id/tv_result"
-            style="@style/ExpressionStyle"
-            android:gravity="end|center_vertical"
-            android:textColor="#000" />
-    </HorizontalScrollView>
+    <EditText
+        android:id="@+id/tv_result"
+        style="@style/ExpressionStyle"
+        android:text="0"
+        android:gravity="end|center_vertical"
+        android:textColor="#000" />
 
     <com.ruffneck.calculator.view.NoScrollGridView
         android:id="@+id/gv"

@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.ruffneck.calculator.rpn.RPN;
@@ -25,8 +26,8 @@ public class MainActivity extends AppCompatActivity {
             "4", "5", "6", "×",
             "1", "2", "3", "-",
             ".", "0", "=", "+"};
-    private TextView tv_result;
-    private TextView tv_expression;
+    private EditText tv_result;
+    private EditText tv_expression;
 
     StringBuilder sb;
     /**
@@ -39,8 +40,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         gridView = (NoScrollGridView) findViewById(R.id.gv);
-        tv_result = (TextView) findViewById(R.id.tv_result);
-        tv_expression = (TextView) findViewById(R.id.tv_expression);
+        tv_result = (EditText) findViewById(R.id.tv_result);
+        tv_expression = (EditText) findViewById(R.id.tv_expression);
 
         asyncInit();
         dataInit();
@@ -102,11 +103,7 @@ public class MainActivity extends AppCompatActivity {
                         clear();
                         break;
                     case "=":
-                        String expre = sb.toString().replaceAll("÷","/").replaceAll("×","*");
-                        double d_result = RPN.calculate(expre);
-                        String result = String.valueOf(d_result);
-                        tv_result.setText(result);
-                        mPref.edit().putBoolean("isNew",true).apply();
+                        calculate();
                         return;
                     case "Del":
                         if (!expression.isEmpty()) {
@@ -115,19 +112,18 @@ public class MainActivity extends AppCompatActivity {
                         }
                         break;
                     default:
-
-                        if(mPref.getBoolean("isNew",true)){
+                        if (mPref.getBoolean("isNew", true)) {
                             clear();
-                            mPref.edit().putBoolean("isNew",false).apply();
+                            mPref.edit().putBoolean("isNew", false).apply();
                         }
-
                         sb.append(keys[position]);
                         expression.push(keys[position]);
                         break;
                 }
-                if (sb.length() > 0)
+                if (sb.length() > 0) {
                     tv_expression.setText(sb.toString());
-                else
+                    tv_expression.setSelection(sb.length());
+                } else
                     tv_expression.setText(" ");
             }
         });
@@ -135,8 +131,35 @@ public class MainActivity extends AppCompatActivity {
 
 
     /**
+     * =号里面的逻辑.
+     */
+    private void calculate() {
+        String result = "0";
+        try {
+            String expre = sb.toString().replaceAll("÷", "/").replaceAll("×", "*");
+            double d_result = RPN.calculate(expre);
+            //判断是否为无穷.
+            if (d_result == Double.POSITIVE_INFINITY) {
+                result = "+∞";
+            } else if (d_result == Double.NEGATIVE_INFINITY) {
+                result = "-∞";
+            } else {
+                result = String.valueOf(d_result);
+            }
+            //新开一个计算.
+        } catch (RuntimeException e) {
+            result = "错误";
+        } finally {
+            mPref.edit().putBoolean("isNew", true).apply();
+            tv_result.setText(result);
+        }
+    }
+
+
+    /**
      * C键逻辑
      */
+
     private void clear() {
         expression.clear();
         sb.setLength(0);

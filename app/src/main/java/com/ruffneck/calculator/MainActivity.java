@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
             "1", "2", "3", "-",
             ".", "0", "=", "+"};
     private TextView tv_result;
+    private TextView tv_expression;
 
     /**
      * 用于维护输入框的栈.
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         gridView = (NoScrollGridView) findViewById(R.id.gv);
         tv_result = (TextView) findViewById(R.id.tv_result);
+        tv_expression = (TextView) findViewById(R.id.tv_expression);
 
         asyncInit();
         dataInit();
@@ -92,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                StringBuilder sb = new StringBuilder(tv_result.getText().toString().trim());
+                StringBuilder sb = new StringBuilder(tv_expression.getText().toString().trim());
 
                 switch (keys[position]) {
                     case "C":
@@ -100,16 +102,18 @@ public class MainActivity extends AppCompatActivity {
                         sb.setLength(0);
                         break;
                     case "=":
-
                         String expre = sb.toString().replaceAll("÷","/").replaceAll("×","*");
                         double d_result = RPN.calculate(expre);
                         String result = String.valueOf(d_result);
                         tv_result.setText(result);
                         expression.clear();
+
+
                         char[] chs = result.toCharArray();
                         for (char ch : chs) {
                             expression.push(String.valueOf(ch));
                         }
+
                         return;
                     case "Del":
                         if (!expression.isEmpty()) {
@@ -123,9 +127,9 @@ public class MainActivity extends AppCompatActivity {
                         break;
                 }
                 if (sb.length() > 0)
-                    tv_result.setText(sb.toString());
+                    tv_expression.setText(sb.toString());
                 else
-                    tv_result.setText(" ");
+                    tv_expression.setText(" ");
             }
         });
     }

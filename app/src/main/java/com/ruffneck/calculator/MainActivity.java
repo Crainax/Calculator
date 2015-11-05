@@ -107,13 +107,7 @@ public class MainActivity extends AppCompatActivity {
                         String result = String.valueOf(d_result);
                         tv_result.setText(result);
                         expression.clear();
-
-
-                        char[] chs = result.toCharArray();
-                        for (char ch : chs) {
-                            expression.push(String.valueOf(ch));
-                        }
-
+                        mPref.edit().putBoolean("isNew",true);
                         return;
                     case "Del":
                         if (!expression.isEmpty()) {

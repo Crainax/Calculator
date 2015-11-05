@@ -5,6 +5,7 @@
     <color name="colorAccent">#FF4081</color>
     <color name="colorKey">#111</color>
     <color name="colorDivideGray">#afff</color>
+    <color name="colorExpression">#eee</color>
     <color name="colorPressed">#cfff</color>
     <color name="colorNormal">#fff</color>
 </resources>

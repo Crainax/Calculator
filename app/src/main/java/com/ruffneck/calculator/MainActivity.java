@@ -9,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.ruffneck.calculator.rpn.RPN;
 import com.ruffneck.calculator.view.NoScrollGridView;
 
 import java.util.Stack;
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void dataInit() {
         expression = new Stack<>();
+        mPref = getSharedPreferences("data", MODE_PRIVATE);
     }
 
     /**
@@ -90,28 +92,40 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                String preString = tv_result.getText().toString();
-
-
+                StringBuilder sb = new StringBuilder(tv_result.getText().toString().trim());
 
                 switch (keys[position]) {
-                    case "=":
+                    case "C":
+                        expression.clear();
+                        sb.setLength(0);
                         break;
+                    case "=":
+
+                        String expre = sb.toString().replaceAll("÷","/").replaceAll("×","*");
+                        double d_result = RPN.calculate(expre);
+                        String result = String.valueOf(d_result);
+                        tv_result.setText(result);
+                        expression.clear();
+                        char[] chs = result.toCharArray();
+                        for (char ch : chs) {
+                            expression.push(String.valueOf(ch));
+                        }
+                        return;
                     case "Del":
                         if (!expression.isEmpty()) {
                             String del = expression.pop();
-                            preString = preString.substring(0, preString.length() - del.length());
+                            sb.delete(sb.length() - del.length(), sb.length());
                         }
                         break;
                     default:
-                        preString = preString + keys[position];
+                        sb.append(keys[position]);
                         expression.push(keys[position]);
                         break;
                 }
-
-                tv_result.setText(preString);
-
-
+                if (sb.length() > 0)
+                    tv_result.setText(sb.toString());
+                else
+                    tv_result.setText(" ");
             }
         });
     }

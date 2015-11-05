@@ -1,4 +1,7 @@
-package stack;
+package com.ruffneck.calculator.rpn;
+
+
+import com.ruffneck.calculator.exception.IllegalExpressionException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +13,7 @@ import java.util.Stack;
  * @author runing
  */
 public class RPN {
+
 
     /**
      * 是否为算术表达式
@@ -230,7 +234,7 @@ public class RPN {
                 double n1 = Double.valueOf(stack.pop());
                 stack.push("" + getCountResult(str, n1, n2));
             }
-            System.out.println("stack = " + stack);
+//            System.out.println("stack = " + stack);
         }
         return Double.valueOf(stack.pop());
     }
@@ -265,18 +269,22 @@ public class RPN {
         return list;
     }
 
-    public static void main(String[] args) {
-//        String str = "9.2+(3-1.1)*3+10/2";
-//        String str = "6*((5+2)*(6/2)+4)+8";
-        String str = "6*((5.4+2)*(6/2)+4)+8";//好像不能求负数的.
-        if (!isExpression(str)) {
-            System.out.println("ERROR!!");
-            return;
+    /**
+     * 计算一个表达式的值
+     * @param expression
+     * @return
+     */
+    public static double calculate(String expression){
+        if (!isExpression(expression)) {
+//            System.out.println("ERROR!!");
+            throw new IllegalExpressionException();
         }
-        List<String> list = resolveString(str);
-        System.out.println(list);
+        List<String> list = resolveString(expression);
+//        System.out.println(list);
         list = nifix_to_post(list);
-        System.out.println(list);
-        System.out.println(str + "=" + get_postfis_result(list));
+//        System.out.println(list);
+        return get_postfis_result(list);
     }
+
+
 }

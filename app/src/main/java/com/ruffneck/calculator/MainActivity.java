@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView tv_result;
     private TextView tv_expression;
 
+    StringBuilder sb;
     /**
      * 用于维护输入框的栈.
      */
@@ -94,20 +95,18 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                StringBuilder sb = new StringBuilder(tv_expression.getText().toString().trim());
+                sb = new StringBuilder(tv_expression.getText().toString().trim());
 
                 switch (keys[position]) {
                     case "C":
-                        expression.clear();
-                        sb.setLength(0);
+                        clear();
                         break;
                     case "=":
                         String expre = sb.toString().replaceAll("÷","/").replaceAll("×","*");
                         double d_result = RPN.calculate(expre);
                         String result = String.valueOf(d_result);
                         tv_result.setText(result);
-                        expression.clear();
-                        mPref.edit().putBoolean("isNew",true);
+                        mPref.edit().putBoolean("isNew",true).apply();
                         return;
                     case "Del":
                         if (!expression.isEmpty()) {
@@ -116,6 +115,12 @@ public class MainActivity extends AppCompatActivity {
                         }
                         break;
                     default:
+
+                        if(mPref.getBoolean("isNew",true)){
+                            clear();
+                            mPref.edit().putBoolean("isNew",false).apply();
+                        }
+
                         sb.append(keys[position]);
                         expression.push(keys[position]);
                         break;
@@ -126,6 +131,15 @@ public class MainActivity extends AppCompatActivity {
                     tv_expression.setText(" ");
             }
         });
+    }
+
+
+    /**
+     * C键逻辑
+     */
+    private void clear() {
+        expression.clear();
+        sb.setLength(0);
     }
 
 

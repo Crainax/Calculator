@@ -7,25 +7,29 @@
     <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"/>
+        android:background="@color/colorPrimary" />
 
-    <TextView
-        android:id="@+id/tv_expression"
-        android:layout_weight="1"
-        android:ellipsize="start"
-        android:gravity="start|center_vertical"
-        android:textColor="#aaa"
-        style="@style/ExpressionStyle"
-        />
+    <HorizontalScrollView
+        style="@style/ExpressionScrollViewStyle"
+        android:layout_weight="1">
 
-    <TextView
-        android:id="@+id/tv_result"
-        android:layout_weight="1"
-        android:ellipsize="start"
-        android:gravity="end|center_vertical"
-        android:textColor="#000"
-        style="@style/ExpressionStyle"
-        />
+        <TextView
+            android:id="@+id/tv_expression"
+            style="@style/ExpressionStyle"
+            android:gravity="start|center_vertical"
+            android:textColor="#aaa" />
+    </HorizontalScrollView>
+
+    <HorizontalScrollView
+        style="@style/ExpressionScrollViewStyle"
+        android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/tv_result"
+            style="@style/ExpressionStyle"
+            android:gravity="end|center_vertical"
+            android:textColor="#000" />
+    </HorizontalScrollView>
 
     <com.ruffneck.calculator.view.NoScrollGridView
         android:id="@+id/gv"

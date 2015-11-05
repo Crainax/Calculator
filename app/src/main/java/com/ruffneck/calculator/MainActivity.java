@@ -107,15 +107,17 @@ public class MainActivity extends AppCompatActivity {
                         calculate();
                         return;
                     case "Del":
-                        //自动补全点号前的0
                         if (!expression.isEmpty()) {
                             String del = expression.pop();
                             sb.delete(sb.length() - del.length(), sb.length());
                         }
                         break;
                     case ".":
+                        //自动补全点号前的0
                         if (sb.length() == 0) {
                             add("0");
+                        } else if (mPref.getBoolean("isNew", true)) {
+                            defaultKey("0");
                         } else {
                             String before = sb.substring(sb.length() - 1, sb.length());
                             if (before != null && !RPN.isNum(before.charAt(0)))
@@ -128,10 +130,11 @@ public class MainActivity extends AppCompatActivity {
                         //自动补全括号前的乘号
                         if (sb.length() > 0) {
                             String before = sb.substring(sb.length() - 1, sb.length());
-                            if (before != null && before.charAt(0) == '.') {
+                            /*if (before != null && before.charAt(0) == '.') {
                                 add("0");
                                 add("×");
-                            } else if (before != null && RPN.isNum(before.charAt(0)))
+                            } else */
+                            if (before != null && RPN.isNum(before.charAt(0)))
                                 add("×");
                         }
 
@@ -164,6 +167,16 @@ public class MainActivity extends AppCompatActivity {
         add(keys[position]);
     }
 
+    /**
+     * 默认键的处理方法.
+     */
+    private void defaultKey(String content) {
+        if (mPref.getBoolean("isNew", true)) {
+            clear();
+            mPref.edit().putBoolean("isNew", false).apply();
+        }
+        add(content);
+    }
     /**
      * 往表达式中添加字符串
      *

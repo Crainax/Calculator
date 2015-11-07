@@ -25,8 +25,13 @@ public class MainActivity extends AppCompatActivity {
             "7", "8", "9", "÷",
             "4", "5", "6", "×",
             "1", "2", "3", "-",
+            ".", "0", "=", "+"};
+/*    private String[] keys = new String[]{"AC", "Del", "(", ")",
+            "7", "8", "9", "÷",
+            "4", "5", "6", "×",
+            "1", "2", "3", "-",
             ".", "0", "π", "+",
-            "Ans", "e", "^", "="};
+            "Ans", "e", "^", "="};*/
     private EditText tv_result;
     private EditText tv_expression;
 
@@ -221,6 +226,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * 按键点击.
+     * @param v
+     */
     public void itemClick(View v) {
 
         String key = ((Button) v).getText().toString();
@@ -311,6 +320,9 @@ public class MainActivity extends AppCompatActivity {
     }*/
 
 
+    /**
+     * GridView的适配器
+     */
     class KeyAdapter extends BaseAdapter {
 
         /*

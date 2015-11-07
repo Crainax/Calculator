@@ -287,5 +287,8 @@ public class RPN {
         return get_postfis_result(list);
     }
 
+    public static void main(String[] args) {
+        System.out.println("hehe");
+    }
 
 }

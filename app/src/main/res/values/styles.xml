@@ -11,7 +11,7 @@
 
     <style name="KeyStyle">
         <item name="android:textColor">@color/colorKey</item>
-        <item name="android:textSize">40sp</item>
+        <item name="android:textSize">45sp</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:gravity">center</item>

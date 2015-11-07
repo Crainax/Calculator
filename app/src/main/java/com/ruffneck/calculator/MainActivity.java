@@ -5,10 +5,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.ruffneck.calculator.exception.IllegalExpressionException;
 import com.ruffneck.calculator.rpn.RPN;
@@ -22,11 +21,12 @@ public class MainActivity extends AppCompatActivity {
     private NoScrollGridView gridView;
     private int height = -2;
 
-    private String[] keys = new String[]{"C", "Del", "(", ")",
+    private String[] keys = new String[]{"AC", "Del", "(", ")",
             "7", "8", "9", "÷",
             "4", "5", "6", "×",
             "1", "2", "3", "-",
-            ".", "0", "=", "+"};
+            ".", "0", "π", "+",
+            "Ans", "e", "^", "="};
     private EditText tv_result;
     private EditText tv_expression;
 
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
         gridView.setAdapter(adapter);
 
         //适配按键事件.
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+       /* gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
@@ -124,24 +124,24 @@ public class MainActivity extends AppCompatActivity {
                                 add("0");
                         }
 
-                        defaultKey(position);
+                        defaultKey(keys[position]);
                         break;
                     case "(":
                         //自动补全括号前的乘号
                         if (sb.length() > 0) {
                             String before = sb.substring(sb.length() - 1, sb.length());
-                            /*if (before != null && before.charAt(0) == '.') {
+                            *//*if (before != null && before.charAt(0) == '.') {
                                 add("0");
                                 add("×");
-                            } else */
+                            } else *//*
                             if (before != null && RPN.isNum(before.charAt(0)))
                                 add("×");
                         }
 
-                        defaultKey(position);
+                        defaultKey(keys[position]);
                         break;
                     default:
-                        defaultKey(position);
+                        defaultKey(keys[position]);
                         break;
                 }
                 if (sb.length() > 0) {
@@ -150,22 +150,9 @@ public class MainActivity extends AppCompatActivity {
                 } else
                     tv_expression.setText(" ");
             }
-        });
+        });*/
     }
 
-
-    /**
-     * 默认键的处理方法.
-     *
-     * @param position
-     */
-    private void defaultKey(int position) {
-        if (mPref.getBoolean("isNew", true)) {
-            clear();
-            mPref.edit().putBoolean("isNew", false).apply();
-        }
-        add(keys[position]);
-    }
 
     /**
      * 默认键的处理方法.
@@ -177,6 +164,7 @@ public class MainActivity extends AppCompatActivity {
         }
         add(content);
     }
+
     /**
      * 往表达式中添加字符串
      *
@@ -225,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * C键逻辑
+     * AC键逻辑
      */
     private void clear() {
         expression.clear();
@@ -233,6 +221,64 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    public void itemClick(View v) {
+
+        String key = ((Button) v).getText().toString();
+
+        sb = new StringBuilder(tv_expression.getText().toString().trim());
+
+        switch (key) {
+            case "AC":
+                clear();
+                break;
+            case "=":
+                calculate();
+                return;
+            case "Del":
+                if (!expression.isEmpty()) {
+                    String del = expression.pop();
+                    sb.delete(sb.length() - del.length(), sb.length());
+                }
+                break;
+            case ".":
+                //自动补全点号前的0
+                if (sb.length() == 0) {
+                    add("0");
+                } else if (mPref.getBoolean("isNew", true)) {
+                    defaultKey("0");
+                } else {
+                    String before = sb.substring(sb.length() - 1, sb.length());
+                    if (before != null && !RPN.isNum(before.charAt(0)))
+                        add("0");
+                }
+
+                defaultKey(key);
+                break;
+            case "(":
+                //自动补全括号前的乘号
+                if (sb.length() > 0) {
+                    String before = sb.substring(sb.length() - 1, sb.length());
+                            /*if (before != null && before.charAt(0) == '.') {
+                                add("0");
+                                add("×");
+                            } else */
+                    if (before != null && RPN.isNum(before.charAt(0)))
+                        add("×");
+                }
+
+                defaultKey(key);
+                break;
+            default:
+                defaultKey(key);
+                break;
+        }
+        if (sb.length() > 0) {
+            tv_expression.setText(sb.toString());
+            tv_expression.setSelection(sb.length());
+        } else
+            tv_expression.setText(" ");
+    }
+    
     /*public static void setListViewHeightBasedOnChildren(GridView listView) {
         // 获取listview的adapter
         ListAdapter listAdapter = listView.getAdapter();
@@ -309,17 +355,44 @@ public class MainActivity extends AppCompatActivity {
             View view = View.inflate(MainActivity.this, R.layout.item_key, null);
 
 
-//            int height = deviceHeight * 5 / 7 / 5;//此处的高度需要动态计算
-//            int width = deviceWidth / 4 - 4; //此处的宽度需要动态计算
             ViewGroup.LayoutParams paras = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT
                     , height / raw - 1);
             view.setLayoutParams(paras); //使设置好的布局参数应用到控件
 
-//            Log.e("Main", paras.height + "");
 
-            TextView tv_key = (TextView) view.findViewById(R.id.tv_key);
-            tv_key.setText(keys[position]);
+            Button bt_key = (Button) view.findViewById(R.id.bt_key);
+            bt_key.setText(keys[position]);
+            //为不同的按键设置不同的点击效果
+            switch (keys[position]) {
+                case "=":
+                case "+":
+                case "-":
+                case "×":
+                case "÷":
+                    System.out.println(keys[position] + ":main");
+                    bt_key.setBackgroundDrawable(getResources().getDrawable(R.drawable.selector_item_key_main));
+                    break;
+                case "1":
+                case "2":
+                case "3":
+                case "4":
+                case "5":
+                case "6":
+                case "7":
+                case "8":
+                case "9":
+                case "0":
+                    System.out.println(keys[position] + ":number");
+                    bt_key.setBackgroundDrawable(getResources().getDrawable(R.drawable.selector_item_key_number));
+                    break;
+                default:
+                    System.out.println(keys[position] + ":default");
+                    bt_key.setBackgroundDrawable(getResources().getDrawable(R.drawable.selector_item_key_others));
+                    break;
+            }
             return view;
+
+
         }
     }
 

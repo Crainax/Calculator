@@ -6,6 +6,9 @@
     <color name="colorKey">#111</color>
     <color name="colorDivideGray">#afff</color>
     <color name="colorExpression">#eee</color>
-    <color name="colorPressed">#cfff</color>
+    <color name="colorPressed">#888</color>
     <color name="colorNormal">#fff</color>
+    <color name="colorEqualPressed">#ff4400</color>
+    <color name="colorEqualNormal">#ec9513</color>
+    <color name="colorOtherPressed">#7777ff</color>
 </resources>
